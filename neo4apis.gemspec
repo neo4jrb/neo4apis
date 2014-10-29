@@ -1,0 +1,26 @@
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'neo4apis/version'
+
+Gem::Specification.new do |s|
+  s.name     = "neo4apis"
+  s.version  = Neo4Apis::VERSION
+  s.required_ruby_version = ">= 1.9.1"
+
+  s.authors  = "Brian Underwood"
+  s.email    = 'public@brian-underwood.codes'
+  s.homepage = "https://github.com/neo4jrb/neo4apis/"
+  s.summary = "An API to import web API data to neo4j"
+  s.license = 'MIT'
+  s.description = <<-EOF
+A core library for importing data from APIs into neo4j.  Designed to be used with an adapter
+  EOF
+
+  s.require_path = 'lib'
+  s.files = Dir.glob("{bin,lib,config}/**/*") + %w(README.md CHANGELOG CONTRIBUTORS Gemfile neo4apis.gemspec)
+
+  s.add_dependency('faraday', "~> 0.9.0")
+  s.add_dependency("neo4j-core", "~> 3.0.3")
+
+end
