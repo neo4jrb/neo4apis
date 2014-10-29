@@ -65,7 +65,9 @@ awesome_client = Awesome.open # From a theoretical API wrapping gem
 
 neo4apis_awesome = Neo4Apis::AwesomeSite.new(neo4j_session, awesome_client: awesome_client)
 
-neo4apis_awesome.import_widget_search('cool') # Does a search for 'cool' via the Awesome gem and imports to the neo4j database
+neo4apis_awesome.batch do
+  neo4apis_awesome.import_widget_search('cool') # Does a search for 'cool' via the Awesome gem and imports to the neo4j database
+end
 
 ```
 
