@@ -18,7 +18,7 @@ A core library for importing data from APIs into neo4j.  Designed to be used wit
   EOF
 
   s.require_path = 'lib'
-  s.files = Dir.glob("{bin,lib,config}/**/*") + %w(README.md CHANGELOG CONTRIBUTORS Gemfile neo4apis.gemspec)
+  s.files = Dir.glob("{bin,lib,config}/**/*") + %w(README.md Gemfile neo4apis.gemspec)
 
   s.add_dependency('faraday', "~> 0.9.0")
   s.add_dependency("neo4j-core", "~> 3.0.3")
