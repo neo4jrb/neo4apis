@@ -3,25 +3,14 @@ module Neo4Apis
     DEFAULT_FLUSH_SIZE = 500
 
     NODE_PROXIES = {}
+    IMPORTERS = {}
+
+    attr_reader :options
 
     def initialize(neo4j_session, options = {})
       @buffer = QueryBuffer.new(neo4j_session)
+      @options = options
       @flush_size = DEFAULT_FLUSH_SIZE
-      (options[:uuids] || {}).each do |label, uuid_field|
-        NODE_PROXIES[label] = Struct.new(:label, :props) do
-          const_set(:UUID_FIELD, uuid_field)
-
-          def uuid_value
-            raise ArgumentError, "props does not have UUID field `#{uuid_field}` for #{self.inspect}" if not props.has_key?(uuid_field)
-
-            props[uuid_field]
-          end
-
-          def uuid_field
-            self.class::UUID_FIELD
-          end
-        end
-      end
     end
 
     def add_node(label, props = {})
@@ -44,14 +33,42 @@ module Neo4Apis
       @buffer << create_relationship_query(type, source, target, props)
     end
 
-    def batch
+    def batch(&block)
       @in_batch = true
 
-      yield
+      instance_eval &block
 
       @buffer.flush
     ensure
       @in_batch = false
+    end
+
+    def import(label, object)
+      self.instance_exec object, &IMPORTERS[label.to_sym]
+    end
+
+    def self.importer(label, &block)
+      IMPORTERS[label.to_sym] = block
+    end
+
+    def self.uuid(label, uuid_field)
+      NODE_PROXIES[label.to_sym] = node_proxy_from_uuid(label.to_sym, uuid_field.to_sym)
+    end
+
+    def self.node_proxy_from_uuid(label, uuid_field)
+      Struct.new(:label, :props) do
+        const_set(:UUID_FIELD, uuid_field)
+
+        def uuid_value
+          raise ArgumentError, "props does not have UUID field `#{uuid_field}` for #{self.inspect}" if not props.has_key?(uuid_field)
+
+          props[uuid_field]
+        end
+
+        def uuid_field
+          self.class::UUID_FIELD
+        end
+      end
     end
 
     private

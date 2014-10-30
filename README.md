@@ -8,18 +8,8 @@ In the below example we assume that a variable `awesome_client` is passed in whi
 
   module Neo4Apis
     class AwesomeSite < Base
-      PREFIX = 'awesome_site'
-
-      def initialize(neo4j_client, options = {})
-        @client = options[:awesome_client]
-
-        options[:uuids] = (options[:uuids] || {}).merge({
-          User: :id,
-          Widget: :uuid
-        })
-
-        super(neo4j_client, options)
-      end
+      uuid :User, :id
+      uuid :Widget, :uuid
 
       def import_widget_search(*args)
         @client.widget_search(*args).each do |widget|
@@ -27,9 +17,7 @@ In the below example we assume that a variable `awesome_client` is passed in whi
         end
       end
 
-      private
-      
-      def add_widget(widget)
+      importer :Widget do |widget|
         user_node = add_user(widget.owner)
 
         # add_node comes from From Neo4Apis::Base
@@ -44,7 +32,7 @@ In the below example we assume that a variable `awesome_client` is passed in whi
         node
       end
 
-      def add_user(user)
+      importer :User do |user|
         add_node :User, {
           id: user.id,
           username: user.username,
@@ -63,10 +51,12 @@ Then somebody else could use your gem in the following manner:
 neo4j_session = Neo4j::Session.open # From the neo4j-core gem
 awesome_client = Awesome.open # From a theoretical API wrapping gem
 
-neo4apis_awesome = Neo4Apis::AwesomeSite.new(neo4j_session, awesome_client: awesome_client)
+neo4apis_awesome = Neo4Apis::AwesomeSite.new(neo4j_session)
 
 neo4apis_awesome.batch do
-  neo4apis_awesome.import_widget_search('cool') # Does a search for 'cool' via the Awesome gem and imports to the neo4j database
+  awesome_client.widget_search('cool').each do |widget|
+    import :Widget, widget # import is provided by neo4apis
+  end
 end
 
 ```
