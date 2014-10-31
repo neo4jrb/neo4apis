@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module Neo4Apis
   class Base
     UUID_FIELDS = {}
@@ -16,12 +18,22 @@ module Neo4Apis
       @buffer.flush
     end
 
-    def add_node(label, props = {})
+    def add_node(label, object = nil, columns = [])
+      props = OpenStruct.new
+
+      if object
+        columns.each do |column|
+          props[column] = object.send(column)
+        end
+      end
+
+      yield props if block_given?
+
       require_batch
 
       raise ArgumentError, "No UUID specified for label `#{label}`" if not UUID_FIELDS[label.to_sym]
 
-      self.class.node_proxy(label).new(props).tap do |node_proxy|
+      self.class.node_proxy(label).new(props.to_h).tap do |node_proxy|
         @buffer << create_node_query(node_proxy)
       end
     end

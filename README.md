@@ -21,10 +21,11 @@ In the below example we assume that a variable `awesome_client` is passed in whi
         user_node = add_user(widget.owner)
 
         # add_node comes from From Neo4Apis::Base
-        node = add_node :Widget, {
-          uuid: widget.uuid,
-          text: widget.text,
-        }
+        # Imports the uuid and text values from the widget object to the node 
+        node = add_node(:Widget, widget, [:uuid, :text]) do |node|
+          # Imports the double_foo property to the node which isn't a simple copy
+          node.double_foo = widget.foo * 2
+        end
 
         # add_relationship comes from Neo4Apis::Base
         add_relationship(:owns, user_node, node)
@@ -33,11 +34,7 @@ In the below example we assume that a variable `awesome_client` is passed in whi
       end
 
       importer :User do |user|
-        add_node :User, {
-          id: user.id,
-          username: user.username,
-          name: user.name,
-        }
+        add_node :User, user, [:id, :username, :name]
       end
 
     end
