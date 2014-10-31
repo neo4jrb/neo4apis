@@ -1,8 +1,9 @@
 module Neo4Apis
   class QueryBuffer < Array
 
-    def initialize(neo4j_session)
+    def initialize(neo4j_session, flush_size)
       @neo4j_session = neo4j_session
+      @flush_size = flush_size
 
       uri = URI.parse(@neo4j_session.resource_url)
 
@@ -21,11 +22,15 @@ module Neo4Apis
       clear
     end
 
+    def <<(query)
+      flush if size >= @flush_size
+
+      super
+    end
 
     private
 
     def execute
-      puts "request_body_data", request_body_data.inspect
       @faraday_connection.post do |req|
         req.url '/db/data/transaction/commit'
         req.headers['Accept'] = 'application/json; charset=UTF-8'

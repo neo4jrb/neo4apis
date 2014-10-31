@@ -1,16 +1,13 @@
 module Neo4Apis
   class Base
-    DEFAULT_FLUSH_SIZE = 500
-
     NODE_PROXIES = {}
     IMPORTERS = {}
 
     attr_reader :options
 
     def initialize(neo4j_session, options = {})
-      @buffer = QueryBuffer.new(neo4j_session)
+      @buffer = QueryBuffer.new(neo4j_session, options[:flush_size] || self.class.default_flush_size)
       @options = options
-      @flush_size = DEFAULT_FLUSH_SIZE
     end
 
     def add_node(label, props = {})
@@ -47,6 +44,10 @@ module Neo4Apis
       self.instance_exec object, &IMPORTERS[label.to_sym]
     end
 
+    def self.prefix(prefix)
+      @prefix = prefix
+    end
+
     def self.importer(label, &block)
       IMPORTERS[label.to_sym] = block
     end
@@ -71,25 +72,27 @@ module Neo4Apis
       end
     end
 
+    def self.default_flush_size
+      500
+    end
+
     private
 
     def create_node_query(node_proxy)
       Neo4j::Core::Query.new.
-        merge(node: {node_proxy.label => {node_proxy.uuid_field => node_proxy.uuid_value}}).
+        merge(node: {self.class.full_label(node_proxy.label) => {node_proxy.uuid_field => node_proxy.uuid_value}}).
         on_create_set(node: node_proxy.props)
     end
 
     def create_relationship_query(type, source, target, props)
       Neo4j::Core::Query.new.
-        match(source: {source.label => {source.uuid_field => source.uuid_value}}).
-        match(target: {target.label => {target.uuid_field => target.uuid_value}}).
+        match(source: {self.class.full_label(source.label) => {source.uuid_field => source.uuid_value}}).
+        match(target: {self.class.full_label(target.label) => {target.uuid_field => target.uuid_value}}).
         merge("source-[:#{type}]->target")
     end
 
-    def add_to_buffer(*args)
-      flush_buffer if buffer.size >= FLUSH_SIZE
-
-      @buffer << args
+    def self.full_label(label)
+      "#{@prefix}#{label}".to_sym
     end
 
     def require_batch
