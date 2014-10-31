@@ -16,16 +16,20 @@ module Neo4Apis
       super()
     end
 
+    def <<(query)
+      flush if size >= @flush_size
+
+      super
+    end
+
     def flush
       execute
 
       clear
     end
 
-    def <<(query)
-      flush if size >= @flush_size
-
-      super
+    def close
+      flush
     end
 
     private
