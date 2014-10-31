@@ -104,7 +104,8 @@ module Neo4Apis
       Neo4j::Core::Query.new.
         match(source: {self.class.full_label(source.label) => {source.uuid_field => source.uuid_value}}).
         match(target: {self.class.full_label(target.label) => {target.uuid_field => target.uuid_value}}).
-        merge("source-[:#{type}]->target")
+        merge("source-[rel:#{type}]->target").
+        on_create_set(rel: props)
     end
 
     def create_constraint_query(label, uuid_field)

@@ -1,28 +1,14 @@
 PATH
   remote: .
   specs:
-    neo4apis (0.0.2)
+    neo4apis (0.0.3)
       faraday (~> 0.9.0)
       neo4j-core (~> 3.0.3)
-
-PATH
-  remote: /Users/brian/github/neo4jrb/neo4j-core
-  specs:
-    neo4j-core (3.0.3)
-      activesupport
-      faraday (~> 0.9.0)
-      faraday_middleware (~> 0.9.1)
-      httparty
-      httpclient
-      json
-      net-http-persistent
-      os
-      zip
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (4.1.6)
+    activesupport (4.1.7)
       i18n (~> 0.6, >= 0.6.9)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -43,7 +29,7 @@ GEM
     httparty (0.13.1)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
-    httpclient (2.5.1)
+    httpclient (2.5.2)
     i18n (0.6.11)
     json (1.8.1)
     memoizable (0.4.2)
@@ -53,6 +39,16 @@ GEM
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     naught (1.0.0)
+    neo4j-core (3.0.3)
+      activesupport
+      faraday (~> 0.9.0)
+      faraday_middleware (~> 0.9.1)
+      httparty
+      httpclient
+      json
+      net-http-persistent
+      os
+      zip
     net-http-persistent (2.9.4)
     os (0.9.6)
     pry (0.10.1)
@@ -94,7 +90,6 @@ PLATFORMS
 
 DEPENDENCIES
   neo4apis!
-  neo4j-core (~> 3.0.0)!
   pry
   rspec
   twitter
