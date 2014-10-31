@@ -1,11 +1,9 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'neo4apis/version'
-
 Gem::Specification.new do |s|
   s.name     = "neo4apis"
-  s.version  = Neo4Apis::VERSION
+  s.version  = '0.0.2'
   s.required_ruby_version = ">= 1.9.1"
 
   s.authors  = "Brian Underwood"
