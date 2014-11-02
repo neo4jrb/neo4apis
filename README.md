@@ -1,3 +1,4 @@
+See also the drivers for [Twitter](https://github.com/neo4jrb/neo4apis-twitter) and [GitHub](https://github.com/neo4jrb/neo4apis-twitter)
 
 neo4apis is a ruby gem for building gems which import data into neo4j.  Takes care of batching of queries for better import performance
 
