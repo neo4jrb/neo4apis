@@ -5,11 +5,12 @@ module Neo4Apis
     UUID_FIELDS = {}
     NODE_PROXIES = {}
     IMPORTERS = {}
+    DEFAULT_BATCH_SIZE = 500
 
     attr_reader :options
 
     def initialize(neo4j_session, options = {})
-      @buffer = QueryBuffer.new(neo4j_session, options[:flush_size] || self.class.default_flush_size)
+      @buffer = QueryBuffer.new(neo4j_session, options[:batch_size] || self.class.batch_size || DEFAULT_BATCH_SIZE)
       @options = options
 
       UUID_FIELDS.each do |label, uuid_field|
@@ -100,8 +101,14 @@ module Neo4Apis
       end
     end
 
-    def self.default_flush_size
-      500
+    def self.batch_size(batch_size = nil)
+      if batch_size.is_a?(Integer)
+        @batch_size = batch_size
+      elsif batch_size.nil?
+        @batch_size
+      else
+        raise ArgumentError, "Invalid value for batch_size: #{batch_size.inspect}"
+      end
     end
 
     private
