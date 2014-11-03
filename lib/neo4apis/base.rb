@@ -48,10 +48,10 @@ module Neo4Apis
       @buffer << create_relationship_query(type, source, target, props)
     end
 
-    def batch(&block)
+    def batch
       @in_batch = true
 
-      instance_eval &block
+      yield
 
       @buffer.close
     ensure

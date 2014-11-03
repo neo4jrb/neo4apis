@@ -66,7 +66,7 @@ neo4apis_awesome = Neo4Apis::AwesomeSite.new(neo4j_session)
 
 neo4apis_awesome.batch do
   awesome_client.widget_search('cool').each do |widget|
-    import :Widget, widget # import is provided by neo4apis
+    neo4apis_awesome.import :Widget, widget # import is provided by neo4apis
   end
 end
 

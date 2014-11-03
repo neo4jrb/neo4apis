@@ -2,8 +2,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'twitter'
-
 group :development do
   gem 'pry'
 end

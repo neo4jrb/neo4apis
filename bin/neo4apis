@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require 'neo4apis/cli/base'
+
+# Require all of the neo4apis gems so that we can include their CLI classes
+$:.map do |path|
+  Dir.glob(File.join(path, 'neo4apis*.rb'))
+end.flatten.each do |path|
+  require path
+end
+
+Neo4Apis::CLI::Base.start(ARGV)
+
