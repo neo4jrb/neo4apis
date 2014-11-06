@@ -3,7 +3,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name     = "neo4apis"
-  s.version  = '0.3.0'
+  s.version  = '0.3.1'
   s.required_ruby_version = ">= 1.9.1"
 
   s.authors  = "Brian Underwood"
@@ -24,5 +24,6 @@ A core library for importing data from APIs into neo4j.  Designed to be used wit
   s.add_dependency('faraday', "~> 0.9.0")
   s.add_dependency("neo4j-core", "~> 3.0.4")
   s.add_dependency('thor', '~> 0.19.1')
+  s.add_dependency('colorize', '~> 0.7.3')
 
 end
