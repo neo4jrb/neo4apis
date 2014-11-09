@@ -3,7 +3,7 @@ $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |s|
   s.name     = "neo4apis"
-  s.version  = '0.3.1'
+  s.version  = '0.4.0'
   s.required_ruby_version = ">= 1.9.1"
 
   s.authors  = "Brian Underwood"

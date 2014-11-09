@@ -116,7 +116,7 @@ module Neo4Apis
     def create_node_query(node_proxy)
       Neo4j::Core::Query.new.
         merge(node: {self.class.full_label(node_proxy.label) => {node_proxy.uuid_field => node_proxy.uuid_value}}).
-        on_create_set(node: node_proxy.props)
+        set(node: node_proxy.props)
     end
 
     def create_relationship_query(type, source, target, props)
@@ -124,7 +124,7 @@ module Neo4Apis
         match(source: {self.class.full_label(source.label) => {source.uuid_field => source.uuid_value}}).
         match(target: {self.class.full_label(target.label) => {target.uuid_field => target.uuid_value}}).
         merge("source-[rel:#{type}]->target").
-        on_create_set(rel: props)
+        set(rel: props)
     end
 
     def create_constraint_query(label, uuid_field)
