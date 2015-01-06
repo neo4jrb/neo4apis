@@ -24,7 +24,7 @@ module Neo4Apis
 
       if object
         columns.each do |column|
-          props[column] = object.send(column)
+          props.send("#{column}=", object.send(column))
         end
       end
 
@@ -32,16 +32,16 @@ module Neo4Apis
 
       require_batch
 
-      raise ArgumentError, "No UUID specified for label `#{label}`" if not UUID_FIELDS[label.to_sym]
+      fail ArgumentError, "No UUID specified for label `#{label}`" if not UUID_FIELDS[label.to_sym]
 
-      self.class.node_proxy(label).new(props.to_h).tap do |node_proxy|
+      self.class.node_proxy(label).new(props.marshal_dump).tap do |node_proxy|
         @buffer << create_node_query(node_proxy)
       end
     end
 
     def add_relationship(type, source, target, props = {})
-      raise ArgumentError, "No source specified" if not source
-      raise ArgumentError, "No target specified" if not target
+      fail ArgumentError, "No source specified" if not source
+      fail ArgumentError, "No target specified" if not target
 
       require_batch
 
@@ -58,8 +58,8 @@ module Neo4Apis
       @in_batch = false
     end
 
-    def import(label, object)
-      self.instance_exec object, &IMPORTERS[label.to_sym]
+    def import(label, *args)
+      self.instance_exec(*args, &IMPORTERS[label.to_sym])
     end
 
     def self.prefix(prefix)
@@ -94,7 +94,7 @@ module Neo4Apis
         end
 
         def uuid_value
-          raise ArgumentError, "props does not have UUID field `#{uuid_field}` for #{self.inspect}" if not props.has_key?(uuid_field)
+          fail ArgumentError, "props does not have UUID field `#{uuid_field}` for #{self.inspect}" if not props.has_key?(uuid_field)
 
           props[uuid_field]
         end
@@ -107,7 +107,7 @@ module Neo4Apis
       elsif batch_size.nil?
         @batch_size
       else
-        raise ArgumentError, "Invalid value for batch_size: #{batch_size.inspect}"
+        fail ArgumentError, "Invalid value for batch_size: #{batch_size.inspect}"
       end
     end
 
@@ -138,7 +138,7 @@ module Neo4Apis
     end
 
     def require_batch
-      raise "Must be in a batch" if not @in_batch
+      fail "Must be in a batch" if not @in_batch
     end
   end
 end

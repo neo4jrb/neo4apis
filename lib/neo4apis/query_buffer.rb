@@ -42,7 +42,7 @@ module Neo4Apis
         req.body = request_body_data.to_json
       end.tap do |response|
         if response.status != 200
-          raise "ERROR: response status #{response.status}:\n#{response.body}"
+          fail "ERROR: response status #{response.status}:\n#{response.body}"
         else
           response_data = JSON.parse(response.body)
           if response_data['errors'].size > 0
@@ -50,7 +50,7 @@ module Neo4Apis
               [error['code'], error['message']].join("\n")
             end.join("\n\n")
 
-            raise "ERROR: Cypher response error:\n" + error_string
+            fail "ERROR: Cypher response error:\n" + error_string
           end
         end
       end
