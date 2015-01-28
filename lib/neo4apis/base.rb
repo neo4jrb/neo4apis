@@ -130,7 +130,7 @@ module Neo4Apis
     end
 
     def create_constraint_query(label, uuid_field)
-      Neo4j::Core::Query.new.create("CONSTRAINT ON (node:#{self.class.full_label(label)}) ASSERT node.#{uuid_field} IS UNIQUE")
+      Neo4j::Core::Query.new.create("CONSTRAINT ON (node:`#{self.class.full_label(label)}`) ASSERT node.#{uuid_field} IS UNIQUE")
     end
 
     def self.full_label(label)
