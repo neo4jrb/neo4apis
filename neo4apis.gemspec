@@ -22,7 +22,7 @@ A core library for importing data from APIs into neo4j.  Designed to be used wit
   s.executables << 'neo4apis'
 
   s.add_dependency('faraday', "~> 0.9.0")
-  s.add_dependency("neo4j-core", "~> 3.0")
+  s.add_dependency("neo4j-core", ">= 3.0")
   s.add_dependency('thor', '~> 0.19.1')
   s.add_dependency('colorize', '~> 0.7.3')
 
