@@ -4,10 +4,11 @@ require 'thor'
 require 'neo4apis/cli/base'
 
 # Require all of the neo4apis gems so that we can include their CLI classes
-$:.map do |path|
-  Dir.glob(File.join(path, 'neo4apis*.rb'))
-end.flatten.each do |path|
-  require path
+# This is rubygems specific.  Happy for other solutions that anybody can provide
+Gem::Specification.all.select do |spec|
+  spec.name =~ /neo4apis-/
+end.map(&:name).map do |name|
+  require name
 end
 
 Neo4Apis::CLI::Base.start(ARGV)
