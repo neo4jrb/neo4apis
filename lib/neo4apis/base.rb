@@ -62,8 +62,12 @@ module Neo4Apis
       self.instance_exec(*args, &IMPORTERS[label.to_sym])
     end
 
-    def self.prefix(prefix)
-      @prefix = prefix
+    def self.common_label(common_label = nil)
+      if common_label.nil?
+        @common_label
+      else
+        @common_label = common_label
+      end
     end
 
     def self.importer(label, &block)
@@ -114,27 +118,27 @@ module Neo4Apis
     private
 
     def create_node_query(node_proxy)
-      Neo4j::Core::Query.new.
-        merge(node: {self.class.full_label(node_proxy.label) => {node_proxy.uuid_field => node_proxy.uuid_value}}).
+      query = Neo4j::Core::Query.new.
+        merge(node: {node_proxy.label => {node_proxy.uuid_field => node_proxy.uuid_value}}).
         break.
         set(node: node_proxy.props)
+
+      query = query.set("node:#{self.class.common_label}") if self.class.common_label
+
+      query
     end
 
     def create_relationship_query(type, source, target, props)
       Neo4j::Core::Query.new.
-        match(source: {self.class.full_label(source.label) => {source.uuid_field => source.uuid_value}}).
-        match(target: {self.class.full_label(target.label) => {target.uuid_field => target.uuid_value}}).
+        match(source: {source.label => {source.uuid_field => source.uuid_value}}).
+        match(target: {target.label => {target.uuid_field => target.uuid_value}}).
         merge("source-[rel:#{type}]->target").
         break.
         set(rel: props)
     end
 
     def create_constraint_query(label, uuid_field)
-      Neo4j::Core::Query.new.create("CONSTRAINT ON (node:`#{self.class.full_label(label)}`) ASSERT node.#{uuid_field} IS UNIQUE")
-    end
-
-    def self.full_label(label)
-      "#{@prefix}#{label}".to_sym
+      Neo4j::Core::Query.new.create("CONSTRAINT ON (node:`#{label}`) ASSERT node.#{uuid_field} IS UNIQUE")
     end
 
     def require_batch
