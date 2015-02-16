@@ -34,6 +34,8 @@ module Neo4Apis
     private
 
     def execute
+      return if empty?
+
       @faraday_connection.post do |req|
         req.url '/db/data/transaction/commit'
         req.headers['Accept'] = 'application/json; charset=UTF-8'
