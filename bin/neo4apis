@@ -5,9 +5,10 @@ require 'neo4apis/cli/base'
 
 # Require all of the neo4apis gems so that we can include their CLI classes
 # This is rubygems specific.  Happy for other solutions that anybody can provide
-Gem::Specification.all.select do |spec|
+Gem::Specification.select do |spec|
   spec.name =~ /neo4apis-/
 end.map(&:name).map do |name|
+  puts "requiring #{name}"
   require name
 end
 
