@@ -24,7 +24,7 @@ module Neo4Apis
 
       if object
         columns.each do |column|
-          props.send("#{column}=", object.send(column))
+          props[column] = object.send(column)
         end
       end
 
@@ -118,23 +118,37 @@ module Neo4Apis
     private
 
     def create_node_query(node_proxy)
-      query = Neo4j::Core::Query.new.
-        merge(node: {node_proxy.label => {node_proxy.uuid_field => node_proxy.uuid_value}}).
-        break.
-        set(node: node_proxy.props)
+      return if node_proxy.props.empty?
 
-      query = query.set("node:#{self.class.common_label}") if self.class.common_label
+      cypher = <<-QUERY
+      MERGE (node:`#{node_proxy.label}` {#{node_proxy.uuid_field}: {uuid_value}})
+      SET #{set_attributes(:node, node_proxy.props.keys)}
+QUERY
 
-      query
+      cypher << " SET node:`#{self.class.common_label}`" if self.class.common_label
+
+      OpenStruct.new({to_cypher: cypher,
+                      merge_params: {uuid_value: node_proxy.uuid_value, props: node_proxy.props}})
     end
 
     def create_relationship_query(type, source, target, props)
-      Neo4j::Core::Query.new.
-        match(source: {source.label => {source.uuid_field => source.uuid_value}}).
-        match(target: {target.label => {target.uuid_field => target.uuid_value}}).
-        merge("source-[rel:#{type}]->target").
-        break.
-        set(rel: props)
+      return if props.empty?
+
+      cypher = <<-QUERY
+              MATCH (source:`#{source.label}`), (target:`#{source.label}`)
+              WHERE source.#{source.uuid_field}={source_value} AND target.#{target.uuid_field}={target_value}
+              MERGE source-[rel:`#{type}`]->target
+              SET #{set_attributes(:rel, props.keys)}
+QUERY
+
+      OpenStruct.new({to_cypher: cypher,
+                      merge_params: {source_value: source.uuid_value, target_value: target.uuid_value, props: props}})
+    end
+
+    def set_attributes(var, properties)
+      properties.map do |property|
+        "#{var}.#{property} = {props}.#{property}"
+      end.join(', ')
     end
 
     def create_constraint_query(label, uuid_field)
