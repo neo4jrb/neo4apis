@@ -134,6 +134,8 @@ QUERY
     def create_relationship_query(type, source, target, props)
       return if props.empty?
 
+      type = type.to_s.send(relationship_transform) if relationship_transform != :none
+
       cypher = <<-QUERY
               MATCH (source:`#{source.label}`), (target:`#{source.label}`)
               WHERE source.#{source.uuid_field}={source_value} AND target.#{target.uuid_field}={target_value}
@@ -143,6 +145,12 @@ QUERY
 
       OpenStruct.new({to_cypher: cypher,
                       merge_params: {source_value: source.uuid_value, target_value: target.uuid_value, props: props}})
+    end
+
+    def relationship_transform
+      (@options[:relationship_transform] || :upcase).to_sym.tap do |transform|
+        fail "Invalid relationship_transform value: #{transform.inspect}" if not [:upcase, :downcase, :none].include?(transform)
+      end
     end
 
     def set_attributes(var, properties)

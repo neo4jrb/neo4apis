@@ -72,3 +72,15 @@ end
 
 ```
 
+## Options
+
+Options can be used in the instantiation of the Neo4Apis client:
+
+    neo4apis_awesome = Neo4Apis::AwesomeSite.new(neo4j_session, {option: value})
+
+
+`relationship_transform`
+
+Allowed values `upcase`, `downcase`, and `none`.  Default: `upcase`
+
+How should relationship types be transformed when saving?  Neo4j recommends upper case relationship types, so `upcase` is the default.  `none` sends through relationship types as specified in the add_relationship method
