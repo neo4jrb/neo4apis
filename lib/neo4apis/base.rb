@@ -132,16 +132,15 @@ QUERY
     end
 
     def create_relationship_query(type, source, target, props)
-      return if props.empty?
-
       type = type.to_s.send(relationship_transform) if relationship_transform != :none
 
       cypher = <<-QUERY
-              MATCH (source:`#{source.label}`), (target:`#{source.label}`)
+              MATCH (source:`#{source.label}`), (target:`#{target.label}`)
               WHERE source.#{source.uuid_field}={source_value} AND target.#{target.uuid_field}={target_value}
               MERGE source-[rel:`#{type}`]->target
-              SET #{set_attributes(:rel, props.keys)}
 QUERY
+
+      cypher << " SET #{set_attributes(:rel, props.keys)}" unless props.empty?
 
       OpenStruct.new({to_cypher: cypher,
                       merge_params: {source_value: source.uuid_value, target_value: target.uuid_value, props: props}})
