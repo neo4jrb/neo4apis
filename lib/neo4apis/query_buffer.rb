@@ -5,12 +5,7 @@ module Neo4Apis
       @neo4j_session = neo4j_session
       @flush_size = flush_size
 
-      uri = URI.parse(@neo4j_session.resource_url)
-
-      @faraday_connection = Faraday.new(:url => "#{uri.scheme}://#{uri.host}:#{uri.port}") do |faraday|
-        faraday.request  :url_encoded             # form-encode POST params
-        faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
-      end
+      @faraday_connection = @neo4j_session.connection
 
       super()
     end
@@ -46,9 +41,8 @@ module Neo4Apis
         if response.status != 200
           fail "ERROR: response status #{response.status}:\n#{response.body}"
         else
-          response_data = JSON.parse(response.body)
-          if response_data['errors'].size > 0
-            error_string = response_data['errors'].map do |error|
+          if response.body[:errors].size > 0
+            error_string = response.body[:errors].map do |error|
               [error['code'], error['message']].join("\n")
             end.join("\n\n")
 
