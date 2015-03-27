@@ -41,8 +41,11 @@ module Neo4Apis
         if response.status != 200
           fail "ERROR: response status #{response.status}:\n#{response.body}"
         else
-          if response.body[:errors].size > 0
-            error_string = response.body[:errors].map do |error|
+          response_data = response.body.is_a?(String) ? JSON.parse(response.body) : response.body
+          response_errors = response_data[:errors] || response_data['errors']
+
+          if response_errors.size > 0
+            error_string = response_errors.map do |error|
               [error['code'], error['message']].join("\n")
             end.join("\n\n")
 
