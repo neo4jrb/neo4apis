@@ -154,7 +154,7 @@ QUERY
 
     def set_attributes(var, properties)
       properties.map do |property|
-        "#{var}.#{property} = {props}.#{property}"
+        "#{var}.`#{property}` = {props}.`#{property}`"
       end.join(', ')
     end
 
