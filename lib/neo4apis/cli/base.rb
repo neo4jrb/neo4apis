@@ -1,9 +1,9 @@
 module Neo4Apis
   module CLI
     class Base < ::Thor
-      class_option :neo4j_url, type: :string,  default: 'http://localhost:7474'
-      class_option :neo4j_username, type: :string
-      class_option :neo4j_password, type: :string
+      option :neo4j_url, type: :string, default: 'http://localhost:7474'
+      option :neo4j_username, type: :string
+      option :neo4j_password, type: :string
 
       no_commands do
         def specified_neo4j_session
