@@ -46,7 +46,7 @@ module Neo4Apis
 
           if response_errors.size > 0
             error_string = response_errors.map do |error|
-              [error['code'], error['message']].join("\n")
+              [error[:code] || error['code'], error[:message] || error['message']].join("\n")
             end.join("\n\n")
 
             fail "ERROR: Cypher response error:\n" + error_string
