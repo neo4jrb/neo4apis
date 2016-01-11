@@ -120,15 +120,22 @@ module Neo4Apis
     def create_node_query(node_proxy)
       return if node_proxy.props.empty?
 
+      props = node_proxy.props
+      extra_labels = props.delete(:_extra_labels)
+
       cypher = <<-QUERY
       MERGE (node:`#{node_proxy.label}` {#{node_proxy.uuid_field}: {uuid_value}})
-      SET #{set_attributes(:node, node_proxy.props.keys)}
+      SET #{set_attributes(:node, props.keys)}
 QUERY
 
       cypher << " SET node:`#{self.class.common_label}`" if self.class.common_label
 
+      (extra_labels || []).each do |label|
+        cypher << " SET node:`#{label}`"
+      end
+
       OpenStruct.new({to_cypher: cypher,
-                      merge_params: {uuid_value: node_proxy.uuid_value, props: node_proxy.props}})
+                      merge_params: {uuid_value: node_proxy.uuid_value, props: props}})
     end
 
     def create_relationship_query(type, source, target, props)
