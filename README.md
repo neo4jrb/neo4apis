@@ -17,7 +17,7 @@ In the below example we assume that a variable `awesome_client` is passed in whi
   module Neo4Apis
     class AwesomeSite < Base
       # Adds a prefix to labels so that they become AwesomeSiteUser and AwesomeSiteWidget (optional)
-      prefix :AwesomeSite
+      common_label :AwesomeSite
 
       # Number of queries which are built up until batch request to DB is made (optional, default = 500)
       batch_size 2000
