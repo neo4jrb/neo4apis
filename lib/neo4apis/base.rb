@@ -144,7 +144,7 @@ QUERY
       cypher = <<-QUERY
               MATCH (source:`#{source.label}`), (target:`#{target.label}`)
               WHERE source.#{source.uuid_field}={source_value} AND target.#{target.uuid_field}={target_value}
-              MERGE source-[rel:`#{type}`]->target
+              MERGE (source)-[rel:`#{type}`]->(target)
 QUERY
 
       cypher << " SET #{set_attributes(:rel, props.keys)}" unless props.empty?
